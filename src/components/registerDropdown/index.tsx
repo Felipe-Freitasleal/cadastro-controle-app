@@ -1,0 +1,101 @@
+import SelectDropdown from "react-native-select-dropdown";
+import { Ionicons } from "@expo/vector-icons";
+import { StyleSheet, Text, View } from "react-native";
+
+interface RegisterDropdownProps {
+  listItem: any[];
+  setList: React.Dispatch<React.SetStateAction<any>>;
+  placeHold: string;
+  renderProp: string;
+}
+
+export function RegisterDropdown({
+  listItem,
+  setList,
+  placeHold,
+  renderProp,
+}: RegisterDropdownProps) {
+  return (
+    <SelectDropdown
+      data={listItem}
+      onSelect={(item) => setList(item.id)}
+      renderButton={(selectedItem, isOpened) => {
+        return (
+          <View style={styles.dropdownButtonStyle}>
+            <Text style={styles.dropdownButtonTxtStyle}>
+              {(selectedItem && selectedItem[renderProp]) || placeHold}
+            </Text>
+            <Ionicons
+              name={isOpened ? "chevron-up" : "chevron-down"}
+              style={styles.dropdownButtonArrowStyle}
+            />
+          </View>
+        );
+      }}
+      renderItem={(item, index, isSelected) => {
+        return (
+          <View
+            style={{
+              ...styles.dropdownItemStyle,
+              ...(isSelected && { backgroundColor: "#D2D9DF" }),
+            }}
+          >
+            <Text style={styles.dropdownItemTxtStyle}>{item[renderProp]}</Text>
+          </View>
+        );
+      }}
+      dropdownStyle={styles.dropdownMenuStyle}
+    />
+  );
+}
+
+const styles = StyleSheet.create({
+  dropdownMenuStyle: {
+    backgroundColor: "#E9ECEF",
+    borderRadius: 8,
+  },
+  dropdownButtonStyle: {
+    height: 54,
+    width: "100%",
+    borderWidth: 1,
+    borderRadius: 8,
+    borderColor: "#999",
+    paddingHorizontal: 16,
+
+    // backgroundColor: "#E9ECEF",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  dropdownButtonIconStyle: {
+    fontSize: 20,
+    marginRight: 8,
+  },
+  dropdownButtonTxtStyle: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: "500",
+    color: "#151E26",
+  },
+  dropdownButtonArrowStyle: {
+    fontSize: 28,
+  },
+  dropdownItemStyle: {
+    width: "100%",
+    flexDirection: "row",
+    paddingHorizontal: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 8,
+  },
+  dropdownItemIconStyle: {
+    fontSize: 28,
+    marginRight: 8,
+  },
+  dropdownItemTxtStyle: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: "500",
+    color: "#151E26",
+  },
+});
