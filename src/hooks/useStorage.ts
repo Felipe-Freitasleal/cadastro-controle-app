@@ -83,10 +83,60 @@ const useStorage = () => {
     }
   };
 
+  const getAllRegistered = async (): Promise<
+    {
+      bairro: string,
+      genero: string,
+      id: string,
+      idade: number,
+      nome: string,
+      sobrenome: string
+    }[]
+  > => {
+    try {
+      const result: {
+        bairro: string,
+        genero: string,
+        id: string,
+        idade: number,
+        nome: string,
+        sobrenome: string
+      }[] = await database.getAllAsync(`
+        SELECT 
+          bairros.bairro,
+          generos.genero,
+          usuarios.id,
+          usuarios.idade,
+          usuarios.nome,
+          usuarios.sobrenome
+        FROM
+          usuarios
+        LEFT JOIN bairros ON usuarios.bairro = bairros.id
+        LEFT JOIN generos ON usuarios.genero = generos.id
+        `);
+
+      return result;
+    } catch (error) {
+      console.log("Erro ao buscar: ", error);
+      return [];
+    }
+  };
+
+  const deleteRegistered = async (id: string) => {
+    try {
+      await database.getAllAsync(`DELETE FROM usuarios WHERE id = ?`, [id])
+    } catch (error) {
+      console.log("Erro ao excluir: ", error);
+      throw error
+    }
+  }
+
   return {
     getNeighborhoods,
     getGender,
     insertRegister,
+    getAllRegistered,
+    deleteRegistered
   };
 };
 
