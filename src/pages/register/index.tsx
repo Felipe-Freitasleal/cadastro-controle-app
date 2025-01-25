@@ -5,12 +5,9 @@ import {
   TextInput,
   TouchableOpacity,
   StatusBar,
-  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useStorage from "../../hooks/useStorage";
-import SelectDropdown from "react-native-select-dropdown";
-import { Ionicons } from "@expo/vector-icons";
 import { RegisterDropdown } from "../../components/registerDropdown";
 import { uuidGenerator } from "../../utils/uuidGenerator";
 
