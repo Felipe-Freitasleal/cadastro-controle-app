@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -10,6 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import useStorage from "../../hooks/useStorage";
 import { RegisterDropdown } from "../../components/registerDropdown";
 import { uuidGenerator } from "../../utils/uuidGenerator";
+import { useIsFocused } from "@react-navigation/native";
 
 export default function Register() {
   const [neighborhoodsList, setNeighborhoodsList] = useState<
@@ -24,13 +25,18 @@ export default function Register() {
       id: number;
     }[]
   >([]);
-  const [selectedGender, setSelectedGender] = useState(0);
-  const [selectedNeighborhood, setSelectedNeighborhood] = useState(0);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [age, setAge] = useState(0);
 
+  const [formState, setFormState] = useState({
+    selectedGender: 0,
+    selectedNeighborhood: 0,
+    firstName: "",
+    lastName: "",
+    age: 0,
+  });
   const { getNeighborhoods, getGender, insertRegister } = useStorage();
+  const focused = useIsFocused();
+  const dropdownRefGender = useRef<any>(null);
+  const dropdownRefNeighborhood = useRef<any>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -44,28 +50,49 @@ export default function Register() {
     }
 
     fetchData();
-  }, []);
+    // resertStates();
+  }, [focused]);
+
+  function resertStates() {
+    setFormState({
+      selectedGender: 0,
+      selectedNeighborhood: 0,
+      firstName: "",
+      lastName: "",
+      age: 0,
+    });
+
+    if (dropdownRefGender.current) {
+      dropdownRefGender.current.reset();
+    }
+
+    if (dropdownRefNeighborhood.current) {
+      dropdownRefNeighborhood.current.reset();
+    }
+  }
+
+  const handleChange = (key: string, value: any) => {
+    setFormState((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
 
   async function handleRegister() {
-    if (
-      firstName !== "" &&
-      lastName !== "" &&
-      selectedGender !== 0 &&
-      selectedNeighborhood !== 0
-    ) {
-      const uuid = uuidGenerator();
+    const uuid = uuidGenerator();
 
-      const result = await insertRegister({
-        id: uuid,
-        firstName: firstName,
-        lastName: lastName,
-        age: age,
-        gender: selectedGender,
-        neighborhood: selectedNeighborhood,
-      });
+    const result = await insertRegister({
+      id: uuid,
+      firstName: formState.firstName,
+      lastName: formState.lastName,
+      age: formState.age,
+      gender: formState.selectedGender,
+      neighborhood: formState.selectedNeighborhood,
+    });
 
-      alert(result);
-    }
+    alert(result);
+
+    return;
   }
 
   return (
@@ -74,31 +101,54 @@ export default function Register() {
       <TextInput
         style={styles.textInput}
         placeholder="Nome"
-        onChangeText={(input) => setFirstName(input)}
+        value={formState.firstName}
+        onChangeText={(input) => handleChange("firstName", input)}
       />
       <TextInput
         style={styles.textInput}
         placeholder="Sobrenome"
-        onChangeText={(input) => setLastName(input)}
+        value={formState.lastName}
+        onChangeText={(input) => handleChange("lastName", input)}
       />
       <TextInput
         style={styles.textInput}
         placeholder="Idade"
-        onChangeText={(input) => setAge(Number(input))}
+        value={formState.age.toString()}
+        keyboardType="numeric"
+        onChangeText={(input) => handleChange("age", Number(input))}
       />
       <RegisterDropdown
         listItem={genderList}
-        setList={setSelectedGender}
-        placeHold={"Selecione seu Gênro"}
+        setItem={(id) => handleChange("selectedGender", id)}
+        placeHold={"Selecione seu Gênero"}
         renderProp={"genero"}
+        defaultValue={formState.selectedGender}
+        dropdownRef={dropdownRefGender}
       />
       <RegisterDropdown
         listItem={neighborhoodsList}
-        setList={setSelectedNeighborhood}
-        placeHold={"Selecione seu bairro"}
+        setItem={(id) => handleChange("selectedNeighborhood", id)}
+        placeHold={"Selecione seu Bairro"}
         renderProp={"bairro"}
+        defaultValue={formState.selectedNeighborhood}
+        dropdownRef={dropdownRefNeighborhood}
       />
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={async () => {
+          if (
+            formState.firstName !== "" &&
+            formState.lastName !== "" &&
+            formState.selectedGender !== 0 &&
+            formState.selectedNeighborhood !== 0
+          ) {
+            await handleRegister();
+            resertStates();
+          } else {
+            alert("Preencha o formulário corretamente");
+          }
+        }}
+      >
         <Text style={styles.buttonText}>Cadastrar</Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -116,7 +166,7 @@ const styles = StyleSheet.create({
     paddingTop: StatusBar.currentHeight,
   },
   title: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: "bold",
   },
   textInput: {
