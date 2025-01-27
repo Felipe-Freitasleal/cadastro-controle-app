@@ -4,26 +4,33 @@ import { StyleSheet, Text, View } from "react-native";
 
 interface RegisterDropdownProps {
   listItem: any[];
-  setList: React.Dispatch<React.SetStateAction<any>>;
+  setItem: React.Dispatch<React.SetStateAction<any>>;
   placeHold: string;
   renderProp: string;
+  defaultValue: number;
+  dropdownRef: React.MutableRefObject<null>;
 }
 
 export function RegisterDropdown({
   listItem,
-  setList,
+  setItem,
   placeHold,
   renderProp,
+  defaultValue,
+  dropdownRef,
 }: RegisterDropdownProps) {
   return (
     <SelectDropdown
+      ref={dropdownRef}
       data={listItem}
-      onSelect={(item) => setList(item.id)}
+      onSelect={(item) => setItem(item.id)}
       renderButton={(selectedItem, isOpened) => {
         return (
           <View style={styles.dropdownButtonStyle}>
             <Text style={styles.dropdownButtonTxtStyle}>
-              {(selectedItem && selectedItem[renderProp]) || placeHold}
+              {selectedItem && selectedItem.id !== 0
+                ? selectedItem[renderProp]
+                : placeHold}
             </Text>
             <Ionicons
               name={isOpened ? "chevron-up" : "chevron-down"}
@@ -45,6 +52,7 @@ export function RegisterDropdown({
         );
       }}
       dropdownStyle={styles.dropdownMenuStyle}
+      defaultValue={defaultValue}
     />
   );
 }
