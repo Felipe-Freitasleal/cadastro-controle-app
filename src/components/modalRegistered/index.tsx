@@ -47,7 +47,6 @@ export function ModalHandleRegistered({
 
         <Pressable style={styles.innerPassword}>
           <Text style={styles.text}>
-            {" "}
             Nome: {`${registered.nome} ${registered.sobrenome} `}
           </Text>
           <Text style={styles.text}> Idade: {`${registered.idade}`}</Text>
@@ -57,7 +56,7 @@ export function ModalHandleRegistered({
 
         <View style={styles.buttonArea}>
           <TouchableOpacity style={styles.button} onPress={handleCloseModal}>
-            <Text style={styles.buttonBackText}>Voltar</Text>
+            <Text>Voltar</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
