@@ -1,6 +1,6 @@
 import SelectDropdown from "react-native-select-dropdown";
 import { Ionicons } from "@expo/vector-icons";
-import { StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 interface RegisterDropdownProps {
   listItem: any[];
@@ -41,18 +41,19 @@ export function RegisterDropdown({
       }}
       renderItem={(item, index, isSelected) => {
         return (
-          <View
+          <ScrollView
             style={{
               ...styles.dropdownItemStyle,
               ...(isSelected && { backgroundColor: "#D2D9DF" }),
             }}
           >
             <Text style={styles.dropdownItemTxtStyle}>{item[renderProp]}</Text>
-          </View>
+          </ScrollView>
         );
       }}
       dropdownStyle={styles.dropdownMenuStyle}
       defaultValue={defaultValue}
+      showsVerticalScrollIndicator={true}
     />
   );
 }
@@ -61,6 +62,8 @@ const styles = StyleSheet.create({
   dropdownMenuStyle: {
     backgroundColor: "#E9ECEF",
     borderRadius: 8,
+    marginTop: -25,
+    height: 185,
   },
   dropdownButtonStyle: {
     height: 54,
