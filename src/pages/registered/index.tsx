@@ -4,7 +4,6 @@ import {
   Text,
   StatusBar,
   FlatList,
-  TouchableOpacity,
   View,
   Pressable,
   Modal,
@@ -13,6 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import useStorage from "../../hooks/useStorage";
 import { ModalHandleRegistered } from "../../components/modalRegistered";
 import { useIsFocused } from "@react-navigation/native";
+import { ModalEditRegistered } from "../../components/modalEditRegistered";
 
 export default function Registered() {
   const [registeredList, setRegisteredList] = useState<
@@ -27,18 +27,20 @@ export default function Registered() {
   >([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [registered, setRegistered] = useState({});
+  const [openCloseEditModal, setOpenCloseEditModal] = useState(false);
+  const [registeredToEdit, setRegisteredToEdit] = useState({});
 
   const { getAllRegistered } = useStorage();
 
   const focused = useIsFocused();
 
+  async function fetchData() {
+    const registered = await getAllRegistered();
+
+    setRegisteredList(registered);
+  }
+
   useEffect(() => {
-    async function fetchData() {
-      const registered = await getAllRegistered();
-
-      setRegisteredList(registered);
-    }
-
     fetchData();
   }, [focused]);
 
@@ -55,6 +57,11 @@ export default function Registered() {
   }
 
   function handleCloseModal() {
+    setModalVisible(false);
+  }
+
+  function handleCloseModalEdit() {
+    setOpenCloseEditModal(false);
     setModalVisible(false);
   }
 
@@ -80,19 +87,15 @@ export default function Registered() {
               >
                 <View style={styles.textView}>
                   <Text style={styles.textFlatlist}>
-                    {" "}
                     Nome: {`${item.nome} ${item.sobrenome} `}
                   </Text>
                   <Text style={styles.textFlatlist}>
-                    {" "}
                     Idade: {`${item.idade}`}
                   </Text>
                   <Text style={styles.textFlatlist}>
-                    {" "}
                     Gênero: {`${item.genero}`}
                   </Text>
                   <Text style={styles.textFlatlist}>
-                    {" "}
                     Bairro: {`${item.bairro}`}
                   </Text>
                 </View>
@@ -101,11 +104,26 @@ export default function Registered() {
           }}
         />
       )}
+
       <Modal visible={modalVisible} animationType="slide" transparent={true}>
         <ModalHandleRegistered
           registered={registered}
           handleCloseModal={handleCloseModal}
           setRegisteredList={setRegisteredList}
+          setOpenCloseEditModal={setOpenCloseEditModal}
+          setRegisteredToEdit={setRegisteredToEdit}
+        />
+      </Modal>
+
+      <Modal
+        visible={openCloseEditModal}
+        animationType="slide"
+        transparent={true}
+      >
+        <ModalEditRegistered
+          registered={registeredToEdit}
+          handleCloseModalEdit={handleCloseModalEdit}
+          fetchData={fetchData}
         />
       </Modal>
     </SafeAreaView>

@@ -5,10 +5,13 @@ import {
   TextInput,
   TouchableOpacity,
   StatusBar,
+  Modal,
+  View,
+  ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useStorage from "../../hooks/useStorage";
-import { RegisterDropdown } from "../../components/registerDropdown";
+import { DropdownList } from "../../components/dropdownList";
 import { uuidGenerator } from "../../utils/uuidGenerator";
 import { useIsFocused } from "@react-navigation/native";
 
@@ -31,7 +34,7 @@ export default function Register() {
     selectedNeighborhood: 0,
     firstName: "",
     lastName: "",
-    age: 0,
+    age: "",
   });
   const { getNeighborhoods, getGender, insertRegister } = useStorage();
   const focused = useIsFocused();
@@ -59,7 +62,7 @@ export default function Register() {
       selectedNeighborhood: 0,
       firstName: "",
       lastName: "",
-      age: 0,
+      age: "",
     });
 
     if (dropdownRefGender.current) {
@@ -85,7 +88,7 @@ export default function Register() {
       id: uuid,
       firstName: formState.firstName,
       lastName: formState.lastName,
-      age: formState.age,
+      age: Number(formState.age),
       gender: formState.selectedGender,
       neighborhood: formState.selectedNeighborhood,
     });
@@ -113,11 +116,16 @@ export default function Register() {
       <TextInput
         style={styles.textInput}
         placeholder="Idade"
-        value={formState.age.toString()}
+        value={String(formState.age)}
         keyboardType="numeric"
-        onChangeText={(input) => handleChange("age", Number(input))}
+        onChangeText={(input) => {
+          const newInput = input.replace(/[^0-9]/g, "");
+          handleChange("age", newInput);
+        }}
+        maxLength={3}
       />
-      <RegisterDropdown
+
+      <DropdownList
         listItem={genderList}
         setItem={(id) => handleChange("selectedGender", id)}
         placeHold={"Selecione seu Gênero"}
@@ -125,7 +133,7 @@ export default function Register() {
         defaultValue={formState.selectedGender}
         dropdownRef={dropdownRefGender}
       />
-      <RegisterDropdown
+      <DropdownList
         listItem={neighborhoodsList}
         setItem={(id) => handleChange("selectedNeighborhood", id)}
         placeHold={"Selecione seu Bairro"}
@@ -140,6 +148,7 @@ export default function Register() {
             formState.firstName !== "" &&
             formState.lastName !== "" &&
             formState.selectedGender !== 0 &&
+            formState.age !== "" &&
             formState.selectedNeighborhood !== 0
           ) {
             await handleRegister();

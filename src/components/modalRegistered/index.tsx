@@ -22,22 +22,37 @@ interface ModalHandleRegisteredProps {
       }[]
     >
   >;
+  setOpenCloseEditModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setRegisteredToEdit: React.Dispatch<React.SetStateAction<{}>>;
 }
 
 export function ModalHandleRegistered({
   registered,
   handleCloseModal,
   setRegisteredList,
+  setOpenCloseEditModal,
+  setRegisteredToEdit,
 }: ModalHandleRegisteredProps) {
   const { deleteRegistered, getAllRegistered } = useStorage();
 
   async function handleDelete(id: string) {
-    alert("Usuario excluído com sucesso!");
-
     await deleteRegistered(id);
     const registered = await getAllRegistered();
     setRegisteredList(registered);
     handleCloseModal();
+    alert("Usuario excluído com sucesso!");
+  }
+
+  async function handleEdit(registered: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    age: number;
+    gender: number;
+    neighborhood: number;
+  }) {
+    setRegisteredToEdit(registered);
+    setOpenCloseEditModal(true);
   }
 
   return (
@@ -45,7 +60,7 @@ export function ModalHandleRegistered({
       <View style={styles.content}>
         <Text style={styles.title}>Cadastro Selecionado</Text>
 
-        <Pressable style={styles.innerPassword}>
+        <Pressable style={styles.registeredInfo}>
           <Text style={styles.text}>
             Nome: {`${registered.nome} ${registered.sobrenome} `}
           </Text>
@@ -55,8 +70,22 @@ export function ModalHandleRegistered({
         </Pressable>
 
         <View style={styles.buttonArea}>
-          <TouchableOpacity style={styles.button} onPress={handleCloseModal}>
-            <Text>Voltar</Text>
+          <TouchableOpacity
+            style={[styles.button, styles.buttonBack]}
+            onPress={handleCloseModal}
+          >
+            <Text style={styles.buttonText}>Voltar</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.button, styles.buttonEdit]}
+            onPress={() => {
+              handleEdit(registered);
+            }}
+          >
+            <Text style={[styles.buttonText, styles.buttonTextColor]}>
+              Editar
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -65,7 +94,9 @@ export function ModalHandleRegistered({
               handleDelete(registered.id);
             }}
           >
-            <Text style={styles.buttonSaveText}>Excluir</Text>
+            <Text style={[styles.buttonText, styles.buttonTextColor]}>
+              Excluir
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -95,7 +126,7 @@ const styles = StyleSheet.create({
     color: "#000",
     marginBottom: 24,
   },
-  innerPassword: {
+  registeredInfo: {
     backgroundColor: "#0e0e0e",
     width: "90%",
     padding: 14,
@@ -103,29 +134,39 @@ const styles = StyleSheet.create({
   },
   text: {
     color: "#FFF",
-    // textAlign: "center",
   },
   buttonArea: {
-    flexDirection: "row",
+    flexDirection: "column",
     width: "90%",
-    marginTop: 8,
+    height: 180,
+    marginTop: 16,
     alignItems: "center",
-    justifyContent: "space-evenly",
+    justifyContent: "center",
+    gap: 16,
   },
   button: {
     flex: 1,
     alignItems: "center",
+    justifyContent: "center",
     width: "100%",
-    marginTop: 14,
-    marginBottom: 14,
-    padding: 8,
     borderRadius: 8,
+    maxHeight: 40,
+    minHeight: 40,
+  },
+  buttonBack: {
+    backgroundColor: "grey",
   },
   buttonSave: {
     backgroundColor: "red",
   },
-  buttonSaveText: {
-    color: "#fff",
+  buttonEdit: {
+    backgroundColor: "green",
+  },
+  buttonText: {
     fontWeight: "bold",
+    color: "#fff",
+  },
+  buttonTextColor: {
+    color: "#fff",
   },
 });
