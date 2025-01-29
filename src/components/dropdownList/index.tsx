@@ -2,7 +2,7 @@ import SelectDropdown from "react-native-select-dropdown";
 import { Ionicons } from "@expo/vector-icons";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
-interface RegisterDropdownProps {
+interface DropdownListProps {
   listItem: any[];
   setItem: React.Dispatch<React.SetStateAction<any>>;
   placeHold: string;
@@ -11,14 +11,14 @@ interface RegisterDropdownProps {
   dropdownRef: React.MutableRefObject<null>;
 }
 
-export function RegisterDropdown({
+export function DropdownList({
   listItem,
   setItem,
   placeHold,
   renderProp,
   defaultValue,
   dropdownRef,
-}: RegisterDropdownProps) {
+}: DropdownListProps) {
   return (
     <SelectDropdown
       ref={dropdownRef}

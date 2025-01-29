@@ -1,12 +1,21 @@
 import { useSQLiteContext } from "expo-sqlite";
 
-interface InsertRegister {
+interface IInsertRegister {
   id: string;
   firstName: string;
   lastName: string;
   age: number;
   gender: number;
   neighborhood: number;
+}
+
+interface IEditRegister {
+  id: string;
+  firstName: string | null;
+  lastName: string | null;
+  age: number | null;
+  gender: number | null;
+  neighborhood: number | null;
 }
 
 const useStorage = () => {
@@ -57,7 +66,7 @@ const useStorage = () => {
     age,
     gender,
     neighborhood,
-  }: InsertRegister) => {
+  }: IInsertRegister) => {
     const statement = await database.prepareAsync(
       `INSERT INTO usuarios
           (id, nome, sobrenome, idade, genero, bairro)
@@ -85,22 +94,22 @@ const useStorage = () => {
 
   const getAllRegistered = async (): Promise<
     {
-      bairro: string,
-      genero: string,
-      id: string,
-      idade: number,
-      nome: string,
-      sobrenome: string
+      bairro: string;
+      genero: string;
+      id: string;
+      idade: number;
+      nome: string;
+      sobrenome: string;
     }[]
   > => {
     try {
       const result: {
-        bairro: string,
-        genero: string,
-        id: string,
-        idade: number,
-        nome: string,
-        sobrenome: string
+        bairro: string;
+        genero: string;
+        id: string;
+        idade: number;
+        nome: string;
+        sobrenome: string;
       }[] = await database.getAllAsync(`
         SELECT 
           bairros.bairro,
@@ -124,19 +133,59 @@ const useStorage = () => {
 
   const deleteRegistered = async (id: string) => {
     try {
-      await database.getAllAsync(`DELETE FROM usuarios WHERE id = ?`, [id])
+      await database.getAllAsync(`DELETE FROM usuarios WHERE id = ?`, [id]);
     } catch (error) {
       console.log("Erro ao excluir: ", error);
-      throw error
+      throw error;
     }
-  }
+  };
+
+  const editRegistered = async ({
+    id,
+    firstName,
+    lastName,
+    age,
+    gender,
+    neighborhood,
+  }: IEditRegister) => {
+    const statement = await database.prepareAsync(
+      `UPDATE usuarios
+      SET 
+        nome = COALESCE(?, usuarios.nome),
+        sobrenome = COALESCE(?, usuarios.sobrenome),
+        idade = COALESCE(?, usuarios.idade),
+        genero = COALESCE(?, usuarios.genero),
+        bairro = COALESCE(?, usuarios.bairro)
+      WHERE
+        id = ?`
+    );
+
+    try {
+      await statement.executeAsync([
+        firstName,
+        lastName,
+        age,
+        gender,
+        neighborhood,
+        id,
+      ]);
+
+      return "Usuário editado com sucesso!";
+    } catch (error) {
+      console.log("Erro no insertRegister: ", error);
+      throw error;
+    } finally {
+      await statement.finalizeAsync();
+    }
+  };
 
   return {
     getNeighborhoods,
     getGender,
     insertRegister,
     getAllRegistered,
-    deleteRegistered
+    deleteRegistered,
+    editRegistered,
   };
 };
 
