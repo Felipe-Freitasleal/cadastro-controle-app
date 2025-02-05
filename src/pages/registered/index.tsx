@@ -13,6 +13,10 @@ import useStorage from "../../hooks/useStorage";
 import { ModalHandleRegistered } from "../../components/modalRegistered";
 import { useIsFocused } from "@react-navigation/native";
 import { ModalEditRegistered } from "../../components/modalEditRegistered";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+import { useDispatch } from "react-redux";
+import { closeEditModal } from "../../redux/slices/openCloseEditModalSlice";
 
 export default function Registered() {
   const [registeredList, setRegisteredList] = useState<
@@ -27,8 +31,10 @@ export default function Registered() {
   >([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [registered, setRegistered] = useState({});
-  const [openCloseEditModal, setOpenCloseEditModal] = useState(false);
   const [registeredToEdit, setRegisteredToEdit] = useState({});
+
+  const isOpen = useSelector((state: RootState) => state.openClose.value);
+  const dispatch = useDispatch();
 
   const { getAllRegistered } = useStorage();
 
@@ -61,7 +67,7 @@ export default function Registered() {
   }
 
   function handleCloseModalEdit() {
-    setOpenCloseEditModal(false);
+    dispatch(closeEditModal());
     setModalVisible(false);
   }
 
@@ -110,16 +116,12 @@ export default function Registered() {
           registered={registered}
           handleCloseModal={handleCloseModal}
           setRegisteredList={setRegisteredList}
-          setOpenCloseEditModal={setOpenCloseEditModal}
+          // setOpenCloseEditModal={setOpenCloseEditModal}
           setRegisteredToEdit={setRegisteredToEdit}
         />
       </Modal>
 
-      <Modal
-        visible={openCloseEditModal}
-        animationType="slide"
-        transparent={true}
-      >
+      <Modal visible={isOpen} animationType="slide" transparent={true}>
         <ModalEditRegistered
           registered={registeredToEdit}
           handleCloseModalEdit={handleCloseModalEdit}

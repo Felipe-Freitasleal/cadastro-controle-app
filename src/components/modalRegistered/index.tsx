@@ -6,6 +6,8 @@ import {
   View,
 } from "react-native";
 import useStorage from "../../hooks/useStorage";
+import { useDispatch } from "react-redux";
+import { openEditModal } from "../../redux/slices/openCloseEditModalSlice";
 
 interface ModalHandleRegisteredProps {
   registered: any;
@@ -22,7 +24,6 @@ interface ModalHandleRegisteredProps {
       }[]
     >
   >;
-  setOpenCloseEditModal: React.Dispatch<React.SetStateAction<boolean>>;
   setRegisteredToEdit: React.Dispatch<React.SetStateAction<{}>>;
 }
 
@@ -30,10 +31,11 @@ export function ModalHandleRegistered({
   registered,
   handleCloseModal,
   setRegisteredList,
-  setOpenCloseEditModal,
   setRegisteredToEdit,
 }: ModalHandleRegisteredProps) {
   const { deleteRegistered, getAllRegistered } = useStorage();
+
+  const dispatch = useDispatch();
 
   async function handleDelete(id: string) {
     await deleteRegistered(id);
@@ -52,7 +54,7 @@ export function ModalHandleRegistered({
     neighborhood: number;
   }) {
     setRegisteredToEdit(registered);
-    setOpenCloseEditModal(true);
+    dispatch(openEditModal());
   }
 
   return (
