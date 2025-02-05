@@ -12,7 +12,7 @@
     "@expo/metro-runtime": "~4.0.1",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
-    "@reduxjs/toolkit": "^2.5.0",
+    "@reduxjs/toolkit": "^2.5.1",
     "expo": "~52.0.27",
     "expo-sqlite": "~15.0.6",
     "expo-status-bar": "~2.0.1",
@@ -29,6 +29,7 @@
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@types/react": "~18.3.12",
+    "@types/react-redux": "^7.1.34",
     "typescript": "^5.3.3"
   },
   "private": true

@@ -36,6 +36,7 @@ export default function Register() {
     lastName: "",
     age: "",
   });
+
   const { getNeighborhoods, getGender, insertRegister } = useStorage();
   const focused = useIsFocused();
   const dropdownRefGender = useRef<any>(null);
